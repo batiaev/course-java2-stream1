@@ -9,7 +9,7 @@ package com.batiaev.java2.lesson4;
 public class Main {
     public static void main(String[] args) {
         MyWindow myWindow = new MyWindow();
-//        myWindow.init1();
+//        myWindow.init();
 //        myWindow.init2();
 //        myWindow.init3X();
 //        myWindow.init3Y();
