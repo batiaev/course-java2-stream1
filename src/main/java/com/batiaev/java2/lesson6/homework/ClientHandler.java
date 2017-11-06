@@ -1,4 +1,4 @@
-package com.batiaev.java2.lesson6;
+package com.batiaev.java2.lesson6.homework;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,40 +9,46 @@ import java.util.Scanner;
  * ClientHandler
  *
  * @author anton
- * @since 02/11/17
+ * @since 06/11/17
  */
 public class ClientHandler implements Runnable {
-    private Socket s;
+    private Socket socket;
     private PrintWriter out;
     private Scanner in;
-    private static int CLIENTS_COUNT = 0;
+    private volatile static int CLIENTS_COUNT = 0;
     private String name;
 
-    public ClientHandler(Socket s) {
+    public ClientHandler(Socket socket) {
         try {
-            this.s = s;
-            out = new PrintWriter(s.getOutputStream());
-            in = new Scanner(s.getInputStream());
+            this.socket = socket;
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new Scanner(socket.getInputStream());
             CLIENTS_COUNT++;
             name = "Client #" + CLIENTS_COUNT;
         } catch (IOException e) {
+            System.out.println("Client handler initialization failed: " + e.getLocalizedMessage());
         }
     }
 
     @Override
     public void run() {
         while (true) {
-            if(in.hasNext()) {
+            if (in.hasNext()) {
                 String w = in.nextLine();
                 System.out.println(name + ": " + w);
-                if(w.equalsIgnoreCase("END")) break;
+                out.println("echo: " + w);
+                if (w.equalsIgnoreCase("END")) break;
             }
         }
         try {
             System.out.println("Client disconnected");
-            s.close();
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendMessage(String msg) {
+        out.println(msg);
     }
 }
