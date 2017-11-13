@@ -1,9 +1,11 @@
 package com.batiaev.java2.lesson8;
 
+import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +15,14 @@ import java.util.List;
  * @author anton
  * @since 06/11/17
  */
-public class ClientHandler implements Runnable {
+public class ClientHandler extends Thread implements Closeable {
     private MyServer server;
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
-    private String name = null;
+    private String name = "unknown";
     private boolean isAuth = false;
+    private LocalDateTime connectTime = LocalDateTime.now();
 
     public ClientHandler(MyServer server, Socket socket) {
         this.server = server;
@@ -35,7 +38,7 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (socket.isConnected() && !socket.isClosed()) {
                 String msg = in.readUTF();
                 if (msg.startsWith(Command.AUTH_COMMAND.getText())) {
                     userAuth(msg);
@@ -49,26 +52,19 @@ public class ClientHandler implements Runnable {
                     } else {
                         sendBroadcastMessage(name + " написал: " + msg);
                     }
-                } else {
-                    server.close(socket);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try {
-            System.out.println("Client disconnected");
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        System.out.println("Client disconnected");
     }
 
     private boolean isUserExist(String userName) {
         return server.getAuthService().contains(userName);
     }
 
-    public void sendPersonalMessage(String user, String message) {
+    private void sendPersonalMessage(String user, String message) {
         server.sendPrivateMessage(name, user, message);
     }
 
@@ -76,7 +72,7 @@ public class ClientHandler implements Runnable {
         server.sendBroadcastMessage(msg);
     }
 
-    public void sendMessage(String msg) {
+    void sendMessage(String msg) {
         System.out.println(name + ": " + msg);
         try {
             out.writeUTF(msg);
@@ -85,15 +81,15 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public boolean isActive() {
+    boolean isActive() {
         return isAuth;
     }
 
-    public Socket getSocket() {
+    Socket getSocket() {
         return socket;
     }
 
-    public String getName() {
+    String getHandlerName() {
         return name;
     }
 
@@ -136,8 +132,6 @@ public class ClientHandler implements Runnable {
             } else {
                 sendMessage("Неверные логин/пароль");
             }
-        } else {
-            server.close(socket);
         }
     }
 
@@ -152,5 +146,14 @@ public class ClientHandler implements Runnable {
             sendMessage("Попытка написать несуществующему пользователю "
                     + userName);
         }
+    }
+
+    LocalDateTime getConnectTime() {
+        return connectTime;
+    }
+
+    @Override
+    public void close() throws IOException {
+        socket.close();
     }
 }

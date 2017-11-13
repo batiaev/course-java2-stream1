@@ -35,7 +35,7 @@ public class MyWindow extends JFrame {
         new MyWindow().setVisible(true);
     }
 
-    public MyWindow() {
+    private MyWindow() {
         initUI();
     }
 
@@ -68,9 +68,9 @@ public class MyWindow extends JFrame {
                 super.windowClosing(event);
                 try {
                     out.writeUTF("end");
-                    sock.close();
                     out.close();
                     in.close();
+                    sock.close();
                 } catch (IOException e) {
                     System.out.println("something happened on closing");
                 }
@@ -86,7 +86,7 @@ public class MyWindow extends JFrame {
         authPanel.add(password);
         authPanel.add(authBtn);
         add(authPanel, BorderLayout.NORTH);
-        authBtn.addActionListener(e -> connect(login.getText(), password.getText()));
+        authBtn.addActionListener(e -> connect(login.getText(), String.valueOf(password.getPassword())));
     }
 
     private void connect(String login, String password) {
@@ -102,30 +102,32 @@ public class MyWindow extends JFrame {
             out = new DataOutputStream(sock.getOutputStream());
             out.writeUTF("/auth " + login + " " + password);
             out.flush();
+
+            new Thread(() -> {
+                try {
+                    while (sock.isConnected() && !sock.isClosed()) {
+                        Thread.sleep(100);
+                        String msg = in.readUTF();
+                        if (msg.startsWith(Command.AUTHOK_COMMAND.getText())) {
+                            String nick = msg.substring(Command.AUTHOK_COMMAND.getText().length() + 1);
+                            setTitle(nick + "'s client");
+                            setAuthorized(true);
+                        } else if (msg.startsWith(Command.DISCONNECTED.getText())) {
+                            jta.append("Connection closed..=(");
+                            setAuthorized(false);
+                        } else if (isAuthorized()) {
+                            if (msg.equalsIgnoreCase("end session")) break;
+                            jta.append(msg + System.lineSeparator());
+                        }
+                    }
+                    setAuthorized(false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        new Thread(() -> {
-            try {
-                while (true) {
-                    String msg = in.readUTF();
-                    if (msg.startsWith(Command.AUTHOK_COMMAND.getText())) {
-                        String nick = msg.substring(Command.AUTHOK_COMMAND.getText().length() + 1);
-                        setTitle(nick + "'s client");
-                        setAuthorized(true);
-                    } else if (msg.startsWith(Command.DISCONNECTED.getText())) {
-                        jta.append("Connection closed..=(");
-                        setAuthorized(false);
-                    } else if (isAuthorized()) {
-                        if (msg.equalsIgnoreCase("end session")) break;
-                        jta.append(msg + System.lineSeparator());
-                    }
-                }
-                Thread.sleep(100);
-            } catch (Exception e) {
-            }
-        }).start();
     }
 
     private void sendMsgFromUI() {
@@ -151,7 +153,7 @@ public class MyWindow extends JFrame {
         jtf.setEnabled(authorized);
     }
 
-    public boolean isAuthorized() {
+    private boolean isAuthorized() {
         return authorized;
     }
 }
