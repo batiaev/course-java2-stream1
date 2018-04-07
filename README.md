@@ -1,5 +1,6 @@
 # Курс Java. Уровень 2
-https://geekbrains.ru/courses/14
+- Ссылка на курс - https://geekbrains.ru/courses/14
+- Ссылка на поток - https://geekbrains.ru/streams/2676
 
 ## Занятия
 
