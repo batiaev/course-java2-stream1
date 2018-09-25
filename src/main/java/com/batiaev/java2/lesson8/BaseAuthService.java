@@ -1,5 +1,11 @@
 package com.batiaev.java2.lesson8;
 
+import org.sqlite.JDBC;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +41,29 @@ public class BaseAuthService implements AuthService {
     }
 
     private List<Entry> entries;
+    private Connection conn;
+
+    private final String DB_PATH = "C:\\dev\\java\\desktop\\coursejava2\\users.db";
+
 
     public BaseAuthService() {
         init();
     }
 
     public int init() {
+
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection(JDBC.PREFIX + DB_PATH);
+            Statement stmt = conn.createStatement();
+            boolean result = stmt.execute("CREATE TABLE IF NOT EXISTS users (login VARCHAR (50) UNIQUE NOT NULL PRIMARY KEY, password VARCHAR (250), nick VARCHAR (250) UNIQUE NOT NULL)");
+            System.out.println(result);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
         entries = new ArrayList<>();
         entries.add(new Entry("login1", "pass1", "nick1"));
         entries.add(new Entry("login2", "pass2", "nick2"));
