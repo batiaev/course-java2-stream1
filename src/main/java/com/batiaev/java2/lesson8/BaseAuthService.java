@@ -2,10 +2,7 @@ package com.batiaev.java2.lesson8;
 
 import org.sqlite.JDBC;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,8 +53,22 @@ public class BaseAuthService implements AuthService {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(JDBC.PREFIX + DB_PATH);
             Statement stmt = conn.createStatement();
-            boolean result = stmt.execute("CREATE TABLE IF NOT EXISTS users (login VARCHAR (50) UNIQUE NOT NULL PRIMARY KEY, password VARCHAR (250), nick VARCHAR (250) UNIQUE NOT NULL)");
-            System.out.println(result);
+            stmt.execute("CREATE TABLE IF NOT EXISTS users (login VARCHAR (50) UNIQUE NOT NULL PRIMARY KEY, password VARCHAR (250), nick VARCHAR (250) UNIQUE NOT NULL)");
+            stmt.execute("DELETE FROM users");
+            PreparedStatement insert = conn.prepareStatement("INSERT INTO USERS (login,password,nick) VALUES(?,?,?)");
+            insert.setString(1,"login1");
+            insert.setString(2,"pass1");
+            insert.setString(3,"nick1");
+            insert.addBatch();
+            insert.setString(1,"login2");
+            insert.setString(2,"pass2");
+            insert.setString(3,"nick2");
+            insert.addBatch();
+            insert.setString(1,"login3");
+            insert.setString(2,"pass3");
+            insert.setString(3,"nick3");
+            insert.addBatch();
+            insert.executeBatch();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
