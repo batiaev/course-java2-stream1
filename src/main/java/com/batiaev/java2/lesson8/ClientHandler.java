@@ -21,6 +21,7 @@ public class ClientHandler extends Thread implements Closeable {
     private DataOutputStream out;
     private DataInputStream in;
     private String name = "unknown";
+    private String login = "";
     private boolean isAuth = false;
     private LocalDateTime connectTime = LocalDateTime.now();
 
@@ -48,6 +49,8 @@ public class ClientHandler extends Thread implements Closeable {
                             sendPrivateMessage(msg);
                         } else if (msg.startsWith(Command.CHAT_MESSAGE.getText() + " ")) {
                             sendChatMessage(msg);
+                        } else if (msg.startsWith(Command.CHANGE_NICK.getText() + " ")) {
+                            changeNick(msg);
                         }
                     } else {
                         sendBroadcastMessage(name + " написал: " + msg);
@@ -58,6 +61,22 @@ public class ClientHandler extends Thread implements Closeable {
             e.printStackTrace();
         }
         System.out.println("Client disconnected");
+    }
+
+    private void changeNick(String msg) {
+        if(login.equals("")){
+            return;
+        }
+        String newNick = msg.substring(Command.CHANGE_NICK.getText().length()).trim();
+
+        String userName = newNick;
+        if (isUserExist(userName)) {
+            sendMessage("Ник не изменен! '" + newNick + "' - уже занят");
+        } else {
+            name = newNick;
+            server.changeNick(login, newNick);
+            sendMessage("Ник изменен на '" + newNick + "'!");
+        }
     }
 
     private boolean isUserExist(String userName) {
@@ -127,6 +146,7 @@ public class ClientHandler extends Thread implements Closeable {
             name = server.getAuthService().getNick(data[1], data[2]);
             if (name != null) {
                 sendMessage("/authok " + name);
+                login = data[1];
                 isAuth = true;
                 sendBroadcastMessage(name + " зашел в чат!");
             } else {
