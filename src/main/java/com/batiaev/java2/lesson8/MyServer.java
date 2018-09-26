@@ -21,10 +21,6 @@ public class MyServer {
     private final List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<>());
     private AuthService authService;
 
-    public static void main(String[] args) {
-        new MyServer(new BaseAuthService());
-    }
-
     private MyServer(AuthService authService) {
         this.authService = authService;
 
@@ -51,6 +47,10 @@ public class MyServer {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void main(String[] args) {
+        new MyServer(new BaseAuthService());
     }
 
     private void startKiller() {
@@ -93,5 +93,9 @@ public class MyServer {
             if (name.equals(userName) && c.isActive())
                 c.sendMessage(from + " написал лично " + userName + ": " + message);
         }
+    }
+
+    public void changeNick(String login, String newNick) {
+        authService.changeNick(login, newNick);
     }
 }

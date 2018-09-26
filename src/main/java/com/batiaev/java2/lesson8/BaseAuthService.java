@@ -1,6 +1,6 @@
 package com.batiaev.java2.lesson8;
 
-//import org.sqlite.JDBC;
+import org.sqlite.JDBC;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -31,11 +31,11 @@ public class BaseAuthService implements AuthService {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            //conn = DriverManager.getConnection(JDBC.PREFIX + DB_PATH);
+            conn = DriverManager.getConnection(JDBC.PREFIX + DB_PATH);
             Statement stmt = conn.createStatement();
             stmt.execute("CREATE TABLE IF NOT EXISTS users (login VARCHAR (50) UNIQUE NOT NULL PRIMARY KEY, password VARCHAR (250), nick VARCHAR (250) UNIQUE NOT NULL)");
 
-            selectUsersStatement = conn.prepareStatement("SELECT login, password, nick FROM USERS WHERE nick = ?");
+            selectUsersStatement = conn.prepareStatement("SELECT login, password, nick FROM USERS");
             addUserStatement = conn.prepareStatement("INSERT INTO USERS (login,password,nick) VALUES(?,?,?)");
             updateNickStatement = conn.prepareStatement("update USERS SET nick = ? WHERE login = ?");
             updatePasswordStatement = conn.prepareStatement("update USERS SET password = ? WHERE login = ?");
@@ -56,7 +56,7 @@ public class BaseAuthService implements AuthService {
     }
 
     private void addLogin(String login, String password, String nick) {
-        if (!contains(nick, login)) {
+        if (!contains(nick) && !containsLogin(login)) {
             Entry entry = new Entry(login, password, nick);
             try {
                 addUserStatement.setString(1, login);
@@ -101,7 +101,8 @@ public class BaseAuthService implements AuthService {
         }
     }
 
-    private void updateNick(String login, String nick) {
+    @Override
+    public void changeNick(String login, String nick) {
         try {
             for (Entry entry : entries) {
                 if (entry.getLogin().equals(login)) {
@@ -134,13 +135,20 @@ public class BaseAuthService implements AuthService {
     }
 
     @Override
-    public boolean contains(String nick, String userName) {
-        if (userName == null || userName.trim().isEmpty()) return false;
+    public boolean contains(String nick) {
         if (nick == null || nick.trim().isEmpty()) return false;
 
         for (Entry e : entries) {
-            if (userName.equals(e.getLogin())) return true;
             if (nick.equals(e.getNick())) return true;
+        }
+        return false;
+    }
+
+    private boolean containsLogin(String userName) {
+        if (userName == null || userName.trim().isEmpty()) return false;
+
+        for (Entry e : entries) {
+            if (userName.equals(e.getLogin())) return true;
         }
         return false;
     }

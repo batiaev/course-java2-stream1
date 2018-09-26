@@ -11,7 +11,8 @@ public enum Command {
     AUTHOK_COMMAND("/authok"),
     DISCONNECTED("/disconnected"),
     PRIVATE_MESSAGE("/w"),
-    CHAT_MESSAGE("/clients");
+    CHAT_MESSAGE("/clients"),
+    CHANGE_NICK("/nick");
 
     public String getText() {
         return text;

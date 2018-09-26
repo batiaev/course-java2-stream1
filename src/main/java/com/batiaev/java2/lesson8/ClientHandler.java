@@ -21,6 +21,7 @@ public class ClientHandler extends Thread implements Closeable {
     private DataOutputStream out;
     private DataInputStream in;
     private String name = "unknown";
+    private String login = "";
     private boolean isAuth = false;
     private LocalDateTime connectTime = LocalDateTime.now();
 
@@ -48,6 +49,8 @@ public class ClientHandler extends Thread implements Closeable {
                             sendPrivateMessage(msg);
                         } else if (msg.startsWith(Command.CHAT_MESSAGE.getText() + " ")) {
                             sendChatMessage(msg);
+                        } else if (msg.startsWith(Command.CHANGE_NICK.getText() + " ")) {
+                            changeNick(msg);
                         }
                     } else {
                         sendBroadcastMessage(name + " написал: " + msg);
@@ -60,8 +63,24 @@ public class ClientHandler extends Thread implements Closeable {
         System.out.println("Client disconnected");
     }
 
+    private void changeNick(String msg) {
+        if(login.equals("")){
+            return;
+        }
+        String newNick = msg.substring(Command.CHANGE_NICK.getText().length()).trim();
+
+        String userName = newNick;
+        if (isUserExist(userName)) {
+            sendMessage("Ник не изменен! '" + newNick + "' - уже занят");
+        } else {
+            name = newNick;
+            server.changeNick(login, newNick);
+            sendMessage("Ник изменен на '" + newNick + "'!");
+        }
+    }
+
     private boolean isUserExist(String userName) {
-        return server.getAuthService().contains(nick, userName);
+        return server.getAuthService().contains(userName);
     }
 
     private void sendPersonalMessage(String user, String message) {
