@@ -146,6 +146,7 @@ public class ClientHandler extends Thread implements Closeable {
             name = server.getAuthService().getNick(data[1], data[2]);
             if (name != null) {
                 sendMessage("/authok " + name);
+                login = data[1];
                 isAuth = true;
                 sendBroadcastMessage(name + " зашел в чат!");
             } else {
