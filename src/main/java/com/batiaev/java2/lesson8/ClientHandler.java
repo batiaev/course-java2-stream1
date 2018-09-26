@@ -61,7 +61,7 @@ public class ClientHandler extends Thread implements Closeable {
     }
 
     private boolean isUserExist(String userName) {
-        return server.getAuthService().contains(userName);
+        return server.getAuthService().contains(nick, userName);
     }
 
     private void sendPersonalMessage(String user, String message) {

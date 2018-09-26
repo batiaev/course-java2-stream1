@@ -12,5 +12,5 @@ public interface AuthService {
 
     boolean login(String login, String pass);
 
-    boolean contains(String userName);
+    boolean contains(String nick, String userName);
 }
