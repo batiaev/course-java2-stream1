@@ -31,6 +31,8 @@ public class MyWindow extends JFrame {
     private DataOutputStream out;
     private boolean authorized = false;
 
+    HistoryStorage historyStorage = new FileHistoryStorage();
+
     public static void main(String[] args) {
         new MyWindow().setVisible(true);
     }
@@ -111,6 +113,7 @@ public class MyWindow extends JFrame {
                         if (msg.startsWith(Command.AUTHOK_COMMAND.getText())) {
                             String nick = msg.substring(Command.AUTHOK_COMMAND.getText().length() + 1);
                             setTitle(nick + "'s client");
+                            jta.append(historyStorage.getMessages(100, 0));
                             setAuthorized(true);
                         } else if (msg.startsWith(Command.DISCONNECTED.getText())) {
                             jta.append("Connection closed..=(");
@@ -118,6 +121,7 @@ public class MyWindow extends JFrame {
                         } else if (isAuthorized()) {
                             if (msg.equalsIgnoreCase("end session")) break;
                             jta.append(msg + System.lineSeparator());
+                            historyStorage.addMessage(msg + System.lineSeparator());
                         }
                     }
                     setAuthorized(false);
