@@ -1,0 +1,22 @@
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<GridPane fx:controller="com.batiaev.patterns.lesson7.homework.Controller"
+          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+    <Label text="Enter Name Here"
+           GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+    <TextField fx:id="nameField"
+               GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+    <Button text="Save" fx:id="getButton"
+            GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+    <Button text="Show Name" fx:id="showButton"
+            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+    <Text fx:id="welcomeLabel"
+          GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2"/>
+</GridPane>
