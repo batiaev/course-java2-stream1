@@ -94,6 +94,7 @@
 - Ссылка на поток 1 (2018-05-24) - https://geekbrains.ru/streams/4282
 - Ссылка на поток 2 (2018-07-02) - https://geekbrains.ru/streams/4472
 - Ссылка на поток 3 (2019-08-19) - https://geekbrains.ru/streams/8007
+- Ссылка на поток 4 (2019-09-20) - https://geekbrains.ru/streams/8007
 
 ## Занятия
 
