@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.batiaev.java1</groupId>
+        <artifactId>java1</artifactId>
+        <version>0.0.3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>java1-stream2</artifactId>
+    <name>Java 1 :: Stream 2 (2018-01-22)</name>
+    <packaging>jar</packaging>
+</project>

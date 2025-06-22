@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- =================================================================== -->
+    <!--                            Properties                               -->
+    <!-- =================================================================== -->
+
+    <property name="PATH" value="./log"/>
+    <property name="ENCODER_PATTERN" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+    <property name="ROLLING_PATTERN" value="%d{yyyy-MM-dd}.log.zip"/>
+    <property name="ROLLING_TS_PATTERN" value="%d{yyyy-MM-dd}.%i.log.zip"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>${ENCODER_PATTERN}</pattern>
+            <immediateFlush>true</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${PATH}/console.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${PATH}/console_${ROLLING_PATTERN}</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder>
+            <pattern>${ENCODER_PATTERN}</pattern>
+            <immediateFlush>true</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${PATH}/debug.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${PATH}/debug_${ROLLING_PATTERN}</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${ENCODER_PATTERN}</pattern>
+            <immediateFlush>false</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!--<appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">-->
+    <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+    <!--<level>ERROR</level>-->
+    <!--<onMatch>NEUTRAL</onMatch>-->
+    <!--<onMismatch>DENY</onMismatch>-->
+    <!--</filter>-->
+
+    <!--<smtpHost>localhost</smtpHost>-->
+    <!--<to>test@example.com</to>-->
+    <!--<from>error@example.com</from>-->
+    <!--<subject>[APP ERROR] at ${HOSTNAME} : %m</subject>-->
+
+    <!--<layout class="ch.qos.logback.classic.PatternLayout">-->
+    <!--<pattern>${ENCODER_PATTERN}</pattern>-->
+    <!--</layout>-->
+    <!--</appender>-->
+
+    <!-- =================================================================== -->
+    <!--                             Loggers                                 -->
+    <!-- =================================================================== -->
+
+    <logger name="com.batiaev.java3.lesson2" level="ERROR"/>
+
+    <logger name="com.batiaev.java3.com.batiaev.java3.lesson6" level="DEBUG" additivity="false">
+        <appender-ref ref="DEBUG_FILE"/>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+        <!--<appender-ref ref="EMAIL"/>-->
+    </root>
+</configuration>
